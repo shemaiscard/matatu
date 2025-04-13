@@ -619,7 +619,7 @@ body {
 }
 
 .modal.visible .modal-content {
-  transform: scale(1);
+  transform: scale(1.2);
 }
 
 .modal-content {
@@ -772,7 +772,7 @@ body {
   padding: 8px;
   border-radius: 50%;
   line-height: 1;
-  font-weight: normal; /* Default normal */
+  font-weight: bold; /* Default normal */
 }
 
 .suit-option:hover {
@@ -804,8 +804,8 @@ body {
   line-height: 1.5;
   margin-top: 10px;
   margin-bottom: 20px;
-  color: var(--text-color);
-  font-size: 1.05rem;
+  color: green;
+  font-size: 1.5rem;
 }
 
 #winner-message .reason {

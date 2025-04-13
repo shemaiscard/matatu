@@ -1,19 +1,3 @@
-    /**
-     * Matatu Card Game - JavaScript Implementation
-     *
-     * Changelog:
-     * - Fixed Joker play logic and color requirements.
-     * - Implemented NEW Ace of Spades blocking rule (opponent plays next, any card).
-     * - Added Recent Cards display (last 5, small).
-     * - Added bold styling for black reference/temporary suits.
-     * - Implemented single-line scaling for hands on PC/Tablet via CSS.
-     * - Added JS hooks for start/end animations (CSS handles animation).
-     * - Centered in-game & Game Over New Game buttons via CSS.
-     * - Player/AI hand scaling implemented.
-     * - Winner message formatting updated.
-     * - Start button bug fixes and improved logging.
-     */
-
     // --- Game State ---
     const gameState = {
       deck: [], discardPile: [], playerHand: [], aiHand: [],
@@ -103,23 +87,23 @@
     }
 
     // --- Game Flow Control ---
-    function handleStartButtonClick() { /* ... (no changes) ... */
+    function handleStartButtonClick() { 
         console.log("Start button clicked - Calling startGame()..."); try { startGame(); } catch (error) { console.error("Error during startGame():", error); updateGameStatus("Error starting game. Check console.", true); }
     }
-    function handleSkipTurnClick() { /* ... (no changes) ... */
+    function handleSkipTurnClick() { 
         console.log("Skip turn / Allow AI to play button clicked"); if (gameState.currentPlayer === 'player' && gameState.playerHasDrawn) { updateGameStatus('You chose not to play. AI\'s turn.'); gameState.playerHasDrawn = false; if(domElements.skipTurn) domElements.skipTurn.style.display = 'none'; switchTurn(); } else { console.warn("Skip turn button clicked inappropriately."); }
     }
-    function handleNewGameClick() { /* ... (no changes) ... */
+    function handleNewGameClick() { 
         console.log("New game button clicked"); if (domElements.gameOverModal) domElements.gameOverModal.classList.remove('visible'); startGame();
     }
-    function showRules() { /* ... (no changes) ... */
+    function showRules() { 
         console.log("Showing rules"); if (domElements.rulesModal) domElements.rulesModal.classList.add('visible');
     }
-    function hideRules() { /* ... (no changes) ... */
+    function hideRules() { 
         console.log("Hiding rules"); if (domElements.rulesModal) domElements.rulesModal.classList.remove('visible');
     }
 
-    function startGame() { /* ... (use version with robust checks and animation hook) ... */
+    function startGame() { 
         console.log("--- Starting New Game ---");
         Object.assign(gameState, { deck: [], discardPile: [], playerHand: [], aiHand: [], currentPlayer: 'player', referenceSuit: null, currentSuit: null, currentValue: null, requiredColor: null, pendingPenalty: { type: null, amount: 0, suit: null, color: null }, gameStatus: 'inProgress', lastCardPlayed: null, lastCardIndex: null, playerHasDrawn: false, aiPlayedAgainCount: 0, recentCards: [] });
         console.log(" Game state reset.");
@@ -157,19 +141,19 @@
     }
 
     // --- Card Handling & Deck Management ---
-    function createDeck() { /* ... (no changes) ... */
+    function createDeck() { 
         const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']; const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']; gameState.deck = []; for (const suit of suits) { for (const value of values) { const color = (suit === 'Hearts' || suit === 'Diamonds') ? 'red' : 'black'; let numericValue = cardValues[value] || 0; if (value === 'A' && suit === 'Spades') numericValue = 60; gameState.deck.push({ suit, value, color, isJoker: false, jokerColor: null, numericValue }); } } gameState.deck.push({ suit: null, value: 'Joker', color: 'red', isJoker: true, jokerColor: 'red', numericValue: 50 }); gameState.deck.push({ suit: null, value: 'Joker', color: 'black', isJoker: true, jokerColor: 'black', numericValue: 50 }); console.log(` Deck created: ${gameState.deck.length} cards.`);
     }
-    function shuffleDeck() { /* ... (no changes) ... */
+    function shuffleDeck() { 
         console.log(" Shuffling deck..."); let deck = gameState.deck; for (let i = deck.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[deck[i], deck[j]] = [deck[j], deck[i]]; }
     }
-    function selectReferenceSuit() { /* ... (use version with bolding class) ... */
+    function selectReferenceSuit() { 
         const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']; gameState.referenceSuit = suits[Math.floor(Math.random() * suits.length)]; console.log(` Reference suit: ${gameState.referenceSuit}`); if(domElements.referenceSuit) { const el = domElements.referenceSuit; el.textContent = `${gameState.suitSymbols[gameState.referenceSuit]} ${gameState.referenceSuit}`; el.className = ''; if (gameState.referenceSuit === 'Clubs' || gameState.referenceSuit === 'Spades') el.classList.add('black-suit-bold'); }
     }
-    function dealCards() { /* ... (no changes) ... */
+    function dealCards() { 
         console.log(" Dealing cards..."); for (let i = 0; i < 7; i++) { if (gameState.deck.length > 0) gameState.playerHand.push(gameState.deck.pop()); if (gameState.deck.length > 0) gameState.aiHand.push(gameState.deck.pop()); } renderPlayerHand(); renderAIHand(); console.log(` Player(${gameState.playerHand.length}), AI(${gameState.aiHand.length})`);
     }
-    function setupInitialDiscard() { /* ... (use robust version) ... */
+    function setupInitialDiscard() { 
         console.log(" Setting up initial discard..."); let attempts = 0; const maxAttempts = gameState.deck.length + 5;
         while (attempts < maxAttempts) {
             if (gameState.deck.length === 0) { console.error(" Deck empty during discard setup!"); if (gameState.discardPile.length > 0) { console.warn(" Trying reshuffle..."); const top = gameState.discardPile.pop(); if (reshuffleDiscardPile()) { gameState.discardPile.push(top); console.log(" Reshuffled, retrying."); } else { gameState.discardPile.push(top); console.error(" Reshuffle failed."); return false; } } else { console.error(" Deck & discard empty."); return false; } }
@@ -180,15 +164,15 @@
         }
         console.error(` Failed discard setup after ${attempts} attempts.`); return false;
     }
-    function drawCard(player) { /* ... (use robust version) ... */
+    function drawCard(player) { 
         if (gameState.deck.length === 0) { if (!reshuffleDiscardPile()) { updateGameStatus("No cards left to draw!", true); return null; } } if (gameState.deck.length === 0) { updateGameStatus("No cards left to draw!", true); return null; } const card = gameState.deck.pop(); if (player === 'player') { gameState.playerHand.push(card); renderPlayerHand(); } else { gameState.aiHand.push(card); renderAIHand(); } updateDeckCount(); updateCardCounts(); console.log(` ${player} drew: ${card.value} ${card.suit || card.jokerColor}`); return card;
     }
-    function reshuffleDiscardPile() { /* ... (no changes) ... */
+    function reshuffleDiscardPile() { 
         console.log(" Reshuffling discard pile..."); if (gameState.discardPile.length <= 1) { console.log(" Not enough cards."); return false; } const topCard = gameState.discardPile.pop(); gameState.deck = gameState.discardPile; gameState.discardPile = [topCard]; shuffleDeck(); updateDeckCount(); console.log(` Reshuffled ${gameState.deck.length} cards.`); return true;
     }
 
     // --- Recent Cards ---
-    function addToRecentCards(card) { /* ... (use version from previous response) ... */
+    function addToRecentCards(card) { 
         gameState.recentCards.unshift({ // Store necessary info
             value: card.value,
             suit: card.suit,
@@ -199,7 +183,7 @@
         if (gameState.recentCards.length > 5) gameState.recentCards.pop();
         renderRecentCards();
     }
-    function renderRecentCards() { /* ... (use version from previous response) ... */
+    function renderRecentCards() { 
         if (!domElements.recentCardsDisplay) return;
         const display = domElements.recentCardsDisplay;
         display.innerHTML = '<span class="recent-cards-label">Recent:</span>'; // Keep label
@@ -221,13 +205,13 @@
     }
 
     // --- Player Actions ---
-    function handlePlayerCardClick(index) { /* ... (use version with Ace logic check) ... */
+    function handlePlayerCardClick(index) { 
         if (gameState.currentPlayer !== 'player' || gameState.gameStatus !== 'inProgress') return; const card = gameState.playerHand[index]; console.log(`Player clicked card [${index}]: ${card.value} of ${card.suit || card.jokerColor}`); if (isCardPlayable(card)) { gameState.lastCardPlayed = card; gameState.lastCardIndex = index; const isAceNeedingSelection = card.value === 'A' && !(card.suit === 'Spades' && gameState.pendingPenalty.type); if (isAceNeedingSelection) { console.log(" Ace needs suit selection."); showAceSuitSelection(); } else { playCard(index); } } else { updateGameStatus("This card is not playable."); console.log(" Card not playable."); addShakeAnimation(domElements.playerHand?.children[index]); }
     }
-    function handleDeckClick() { /* ... (use version from previous response) ... */
+    function handleDeckClick() { 
         if (gameState.currentPlayer !== 'player' || gameState.gameStatus !== 'inProgress') return; console.log("Player clicked deck."); if (gameState.pendingPenalty.type) { updateGameStatus(`Drawing ${gameState.pendingPenalty.amount} penalty cards.`); console.log(` Player accepts penalty: ${gameState.pendingPenalty.amount}`); const amount = gameState.pendingPenalty.amount; clearPenalty(); for (let i = 0; i < amount; i++) { if (!drawCard('player')) break; } switchTurn(); return; } if (gameState.playerHasDrawn) { updateGameStatus("Already drawn. Play or allow AI."); console.log(" Player already drew."); return; } const drawn = drawCard('player'); if (drawn) { gameState.playerHasDrawn = true; const canPlay = gameState.playerHand.some(isCardPlayable); if (canPlay) { updateGameStatus("Drew. Play or allow AI."); if(domElements.skipTurn) domElements.skipTurn.style.display = 'block'; highlightPlayableCards(); console.log(" Player can play after draw."); } else { updateGameStatus("Drew. No playable cards. AI's turn."); if(domElements.skipTurn) domElements.skipTurn.style.display = 'none'; console.log(" Player cannot play after draw."); setTimeout(switchTurn, 1000); } } else { updateGameStatus("No cards to draw."); const canPlay = gameState.playerHand.some(isCardPlayable); if (!canPlay) { updateGameStatus("No cards & no play. AI's turn."); setTimeout(switchTurn, 1000); } else { updateGameStatus("No cards, but can play."); highlightPlayableCards(); } }
     }
-    function handleSuitOptionClick(suit) { /* ... (use version setting suit *before* playCard) ... */
+    function handleSuitOptionClick(suit) { 
         console.log(`Player selected suit: ${suit}`); hideAceSuitSelection(); if (gameState.lastCardPlayed && gameState.lastCardIndex !== null) { gameState.currentSuit = suit; showTemporarySuit(suit); playCard(gameState.lastCardIndex, suit); } else { console.error("Suit selected but no card stored."); } gameState.lastCardPlayed = null; gameState.lastCardIndex = null;
     }
 
@@ -239,7 +223,7 @@
         const penalty = gameState.pendingPenalty;
 
         // 1. Check Penalty Counters
-        if (penalty.type) { /* ... (penalty counter logic - unchanged) ... */
+        if (penalty.type) { 
             if (card.value === 'A' && card.suit === 'Spades') return true; if (penalty.type === 'joker') { return (card.isJoker && card.jokerColor === penalty.color) || ((card.value === '2' || card.value === '3') && card.color === penalty.color); } if (penalty.type === '2' || penalty.type === '3') { return (card.value === penalty.type) || (penalty.type === '3' && card.value === '2' && card.suit === penalty.suit) || (penalty.type === '2' && card.value === '3' && card.suit === penalty.suit) || (card.isJoker && card.jokerColor === penalty.color); } return false;
         }
 
@@ -326,7 +310,7 @@
         }
 
         // --- Check for Win Condition ---
-        if (hand.length === 0) { /* ... (Win check) ... */
+        if (hand.length === 0) { 
             gameState.gameStatus = player === 'player' ? 'playerWin' : 'aiWin'; endGame(`played last card (${card.value} ${card.suit || card.jokerColor}).`); return;
         }
 
@@ -335,9 +319,9 @@
         if(domElements.skipTurn) domElements.skipTurn.style.display = 'none';
 
         // Determine next player based on turnResult
-        if (turnResult === 'play_again') { /* ... (Play again logic) ... */
+        if (turnResult === 'play_again') { 
             updateGameStatus(`${player === 'player' ? 'You play' : 'AI plays'} again!`); console.log(` ${player} plays again.`); if (player === 'ai') { gameState.aiPlayedAgainCount++; if (gameState.aiPlayedAgainCount < 5) { setTimeout(aiTurn, 1000); } else { console.warn("AI limit."); updateGameStatus("AI limit. Your turn.", true); switchTurn(); } } else { highlightPlayableCards(); }
-        } else if (turnResult === 'pass_back') { /* ... (Pass back logic) ... */
+        } else if (turnResult === 'pass_back') { 
             gameState.currentPlayer = player === 'player' ? 'ai' : 'player'; updateTurnIndicator(); console.log(` Penalty passed back to ${gameState.currentPlayer}.`); updateGameStatus(`Penalty passed back to ${gameState.currentPlayer}!`); if (gameState.currentPlayer === 'ai') setTimeout(aiTurn, 1000); else highlightPlayableCards();
         } else if (turnResult === 'blocked_penalty') {
             // NEW RULE: Opponent plays next, any card
@@ -352,8 +336,6 @@
             switchTurn(); // Normal turn progression
         }
     }
-
-
     // Updated handleCardEffect to NOT handle Ace suit setting
     function handleCardEffect(card) {
         let turnResult = 'normal';
@@ -409,28 +391,28 @@
         return 'normal';
     }
 
-    function clearPenalty() { /* ... (no changes) ... */
+    function clearPenalty() { 
         gameState.pendingPenalty = { type: null, amount: 0, suit: null, color: null }; updatePenaltyDisplay();
     }
-    function handleReferenceSeven() { /* ... (no changes) ... */
+    function handleReferenceSeven() { 
         console.log(" Ref 7! Counting..."); updateGameStatus("Ref 7! Counting...", true); gameState.gameStatus = 'counting'; setTimeout(checkElimination, 1500);
     }
-    function checkElimination() { /* ... (no changes) ... */
+    function checkElimination() { 
         console.log(" Checking elimination..."); const pRes = evaluatePlayerHandForElimination(gameState.playerHand); const aiRes = evaluatePlayerHandForElimination(gameState.aiHand); console.log(` P Sum: ${pRes.sum}, Elim: ${pRes.eliminated}. R: ${pRes.reason}`); console.log(` AI Sum: ${aiRes.sum}, Elim: ${aiRes.eliminated}. R: ${aiRes.reason}`); showCountDisplay(pRes, aiRes); setTimeout(() => { let final = 'draw'; let r = `P:${pRes.sum},AI:${aiRes.sum}.`; if (pRes.eliminated && aiRes.eliminated) { final = pRes.sum <= aiRes.sum ? 'playerWin' : 'aiWin'; r += " Both elim."; } else if (pRes.eliminated) { final = 'aiWin'; r += " P elim."; } else if (aiRes.eliminated) { final = 'playerWin'; r += " AI elim."; } else { final = pRes.sum <= aiRes.sum ? 'playerWin' : 'aiWin'; r += " Neither elim."; if (pRes.sum === aiRes.sum) final = 'draw'; } gameState.gameStatus = final; endGame(`Count round. ${r}`); }, 3500);
     }
-    function evaluatePlayerHandForElimination(hand) { /* ... (no changes) ... */
+    function evaluatePlayerHandForElimination(hand) { 
         let sum = 0; let hasAce = false; let hasJoker = false; let hasNormAce = false; let hasAceS = false; let hasTwo = false; let hasOnly3 = hand.length === 1 && hand[0].value === '3'; let sumOther = 0; hand.forEach(c => { let v = 0; if (c.isJoker) { hasJoker = true; v = 50; } else if (c.value === 'A') { hasAce = true; if (c.suit === 'Spades') { hasAceS = true; v = 60; } else { hasNormAce = true; v = 11; } } else { v = cardValues[c.value] || 0; } sum += v; if (c.value === '2') { hasTwo = true; } else { sumOther += v; } }); let elim = false; let reason = ""; if (hasJoker || hasAce) { elim = true; reason = hasJoker ? "Has Joker" : (hasAceS ? "Has A♠" : "Has Ace"); } else if (hasOnly3) { elim = false; reason = "Only 3"; } else if (hasTwo && sumOther <= 10) { elim = false; reason = `Has 2, other≤10 (${sumOther})`; } else if (sum > 30) { elim = true; reason = `Sum>30 (${sum})`; } else { reason = `Sum≤30 (${sum})`; } return { sum, eliminated: elim, reason };
     }
-    function calculateCardSum(hand) { /* ... (no changes) ... */
+    function calculateCardSum(hand) { 
         return hand.reduce((sum, card) => { let v = 0; if (card.isJoker) v = 50; else if (card.value === 'A') v = (card.suit === 'Spades') ? 60 : 11; else v = cardValues[card.value] || 0; return sum + v; }, 0);
     }
 
-    function switchTurn() { /* ... (no changes) ... */
+    function switchTurn() { 
         if (gameState.gameStatus !== 'inProgress') return; if (gameState.currentPlayer === 'player') { gameState.playerHasDrawn = false; if(domElements.skipTurn) domElements.skipTurn.style.display = 'none'; } else { gameState.aiPlayedAgainCount = 0; } gameState.currentPlayer = gameState.currentPlayer === 'player' ? 'ai' : 'player'; console.log(` Switching turn to ${gameState.currentPlayer}`); updateTurnIndicator(); if (gameState.currentPlayer === 'ai') { setTimeout(aiTurn, 1000); } else { highlightPlayableCards(); if (gameState.pendingPenalty.type) { updateGameStatus(`Your turn. Counter ${gameState.pendingPenalty.amount} or draw.`, true); } }
     }
 
     // --- AI Logic ---
-    function aiTurn() { /* ... (use version checking game status) ... */
+    function aiTurn() { /* ... ( checking game status) ... */
         if (gameState.currentPlayer !== 'ai' || gameState.gameStatus !== 'inProgress') return; console.log(" AI's turn."); updateGameStatus("AI is thinking...");
         // 0. Check if allowed to play anything (after A-spades block)
         const playAnyCard = !gameState.currentSuit && !gameState.currentValue && !gameState.requiredColor && gameState.discardPile.length > 0; // Heuristic check
@@ -448,7 +430,7 @@
             console.log(" AI draws card."); updateGameStatus("AI draws card."); const drawn = drawCard('ai'); if (drawn && isCardPlayable(drawn)) { console.log(` AI drew playable: ${drawn.value} ${drawn.suit || drawn.jokerColor}.`); updateGameStatus(`AI drew & plays ${drawn.value} ${drawn.suit || drawn.jokerColor}.`); const idx = gameState.aiHand.length - 1; const needsSelect = drawn.value === 'A'; setTimeout(() => { if (needsSelect) playCard(idx); /* AI choice in playCard */ else playCard(idx); }, 800); } else { console.log(" AI drew unplayable / failed draw."); updateGameStatus("AI drew & ends turn."); switchTurn(); }
         }
     }
-    function findCounterCard() { /* ... (no changes) ... */
+    function findCounterCard() { 
         const penalty = gameState.pendingPenalty; let possible = []; for (let i = 0; i < gameState.aiHand.length; i++) { if (isCardPlayable(gameState.aiHand[i])) { possible.push({ card: gameState.aiHand[i], index: i }); } } if (possible.length === 0) return -1; const aceS = possible.find(p => p.card.value === 'A' && p.card.suit === 'Spades'); if (aceS) return aceS.index; const stack = possible.find(p => { const pVal = penaltyValues[p.card.value] || (p.card.isJoker ? penaltyValues.joker : 0); return pVal >= penaltyValues[penalty.type]; }); if (stack) return stack.index; return possible[0].index;
     }
     // Updated findBestCard to handle playAnyCard flag and Ref 7 restriction correctly
@@ -537,18 +519,18 @@
         console.log(" AI Strategy: Playing first available card from remaining playable list.");
         return playable[0].index;
     }
-    function aiSelectSuitForAce() { /* ... (no changes) ... */
+    function aiSelectSuitForAce() { 
         const counts = { Hearts: 0, Diamonds: 0, Clubs: 0, Spades: 0 }; let maxC = 0; let bestS = null; gameState.aiHand.forEach(c => { if (!c.isJoker && c.value !== 'A' && c.suit) counts[c.suit]++; }); for (const s in counts) { if (counts[s] > maxC) { maxC = counts[s]; bestS = s; } } if (!bestS) { const suits = Object.keys(counts); bestS = suits[Math.floor(Math.random() * suits.length)]; } console.log(` AI selected suit: ${bestS}`); return bestS;
     }
 
     // --- UI Rendering & Updates ---
-    function renderPlayerHand() { /* ... (use version with scaling class) ... */
+    function renderPlayerHand() { /* ... ( with scaling class) ... */
         if (!domElements.playerHand) return; domElements.playerHand.innerHTML = ''; const num = gameState.playerHand.length; const cont = domElements.playerHand; let cls = ''; if (num > 20) cls = 'scale-70'; else if (num > 15) cls = 'scale-80'; else if (num > 10) cls = 'scale-90'; else cls = 'scale-100'; cont.className = 'player-hand ' + cls; console.log(` Player Hand: ${num} cards, class: ${cls}`); gameState.playerHand.forEach((card, index) => { const el = createCardElement(card); el.dataset.index = index; el.addEventListener('click', () => handlePlayerCardClick(index)); cont.appendChild(el); card.element = el; }); highlightPlayableCards(); updateCardCounts();
     }
-    function renderAIHand() { /* ... (use version with scaling class) ... */
+    function renderAIHand() { /* ... ( with scaling class) ... */
         if (!domElements.aiHand) return; domElements.aiHand.innerHTML = ''; const num = gameState.aiHand.length; const cont = domElements.aiHand; let cls = ''; if (num > 20) cls = 'scale-70'; else if (num > 15) cls = 'scale-80'; else if (num > 10) cls = 'scale-90'; else cls = 'scale-100'; cont.className = 'computer-hand ' + cls; console.log(` AI Hand: ${num} cards, class: ${cls}`); for (let i = 0; i < num; i++) { const el = document.createElement('div'); el.className = 'card card-back'; cont.appendChild(el); } updateCardCounts();
     }
-    function createCardElement(card) { /* ... (no changes) ... */
+    function createCardElement(card) { 
         const el = document.createElement('div'); el.className = 'card'; const suitSym = card.suit ? gameState.suitSymbols[card.suit] : ''; const colorCls = card.isJoker ? card.jokerColor : (card.color || ''); let valDisp = card.value === 'Joker' ? 'JK' : (card.value || ''); if (valDisp === '10') valDisp = 'T'; else if (valDisp.length > 1 && valDisp !== 'JK') valDisp = valDisp.slice(0,1); el.classList.add(colorCls); if (card.suit) el.classList.add(card.suit.toLowerCase()); if (card.isJoker) el.classList.add('joker'); el.innerHTML = `<div class="card-top"><span class="value">${valDisp}</span>${card.suit ? `<span class="suit-icon">${suitSym}</span>` : ''}</div><div class="card-center">${card.isJoker ? '🃏' : suitSym}</div><div class="card-bottom"><span class="value">${valDisp}</span>${card.suit ? `<span class="suit-icon">${suitSym}</span>` : ''}</div>`; return el;
     }
     // Updated highlightPlayableCards to handle 'play any' state
@@ -567,19 +549,19 @@
         });
     }
 
-    function updateDiscardPile() { /* ... (no changes) ... */
+    function updateDiscardPile() { 
         if (!domElements.discardPile) return; domElements.discardPile.innerHTML = ''; if (gameState.discardPile.length > 0) { const top = gameState.discardPile[gameState.discardPile.length - 1]; domElements.discardPile.appendChild(createCardElement(top)); domElements.discardPile.classList.add('has-card'); } else { domElements.discardPile.classList.remove('has-card'); }
     }
-    function updateTurnIndicator() { /* ... (no changes) ... */
+    function updateTurnIndicator() { 
         if (!domElements.playerTurn || !domElements.computerTurn) return; if (gameState.currentPlayer === 'player') { domElements.playerTurn.classList.add('active'); domElements.computerTurn.classList.remove('active'); } else { domElements.playerTurn.classList.remove('active'); domElements.computerTurn.classList.add('active'); }
     }
-    function updateCardCounts() { /* ... (no changes) ... */
+    function updateCardCounts() { 
         if (domElements.playerCardCount) domElements.playerCardCount.textContent = gameState.playerHand.length; if (domElements.aiCardCount) domElements.aiCardCount.textContent = gameState.aiHand.length;
     }
-    function updateDeckCount() { /* ... (no changes) ... */
+    function updateDeckCount() { 
         if (domElements.deckCount) domElements.deckCount.textContent = gameState.deck.length;
     }
-    function updatePenaltyDisplay() { /* ... (no changes) ... */
+    function updatePenaltyDisplay() { 
         if (!domElements.penaltyDisplay || !domElements.pendingPenalty) return; if (gameState.pendingPenalty.type) { domElements.pendingPenalty.textContent = `Draw ${gameState.pendingPenalty.amount}!`; domElements.penaltyDisplay.classList.add('visible'); domElements.penaltyDisplay.className = `penalty-display visible penalty-${gameState.pendingPenalty.type}`; } else { domElements.penaltyDisplay.classList.remove('visible'); }
     }
     // Updated showTemporarySuit for bolding
@@ -599,25 +581,25 @@
         el.style.display = 'inline-block';
     }
 
-    function hideTemporarySuit() { /* ... (no changes) ... */
+    function hideTemporarySuit() { 
         if (domElements.temporarySuit) domElements.temporarySuit.style.display = 'none';
     }
-    function showAceSuitSelection() { /* ... (no changes) ... */
+    function showAceSuitSelection() { 
         console.log(" Showing Ace suit selection modal."); if (domElements.aceModal) domElements.aceModal.classList.add('visible');
     }
-    function hideAceSuitSelection() { /* ... (no changes) ... */
+    function hideAceSuitSelection() { 
         if (domElements.aceModal) domElements.aceModal.classList.remove('visible');
     }
-    function showCountDisplay(pRes, aiRes) { /* ... (no changes) ... */
+    function showCountDisplay(pRes, aiRes) { 
         if (!domElements.countDisplay) return; let msg = `<h3>Count Results</h3><p>P: ${pRes.sum}pts ${pRes.eliminated?'<span class="eliminated">(ELIM)</span>':''} (${pRes.reason})</p><p>AI: ${aiRes.sum}pts ${aiRes.eliminated?'<span class="eliminated">(ELIM)</span>':''} (${aiRes.reason})</p>`; domElements.countDisplay.innerHTML = msg; domElements.countDisplay.classList.add('visible'); setTimeout(() => { if(domElements.countDisplay) domElements.countDisplay.classList.remove('visible'); }, 3500);
     }
-    function updateGameStatus(message, permanent = false) { /* ... (no changes) ... */
+    function updateGameStatus(message, permanent = false) { 
         if (!domElements.gameStatus) return; console.log(" Status:", message); domElements.gameStatus.textContent = message; domElements.gameStatus.classList.add('visible'); if (domElements.gameStatus.timeoutId) clearTimeout(domElements.gameStatus.timeoutId); if (!permanent) { domElements.gameStatus.timeoutId = setTimeout(() => { if(domElements.gameStatus) domElements.gameStatus.classList.remove('visible'); }, 3000); }
     }
-    function addShakeAnimation(element) { /* ... (no changes) ... */
+    function addShakeAnimation(element) { 
         if (element) { element.classList.add('shake'); setTimeout(() => element.classList.remove('shake'), 500); }
     }
-    function endGame(reason = "") { /* ... (use version with <br> and animation hook) ... */
+    function endGame(reason = "") { /* ... ( with <br> and animation hook) ... */
         console.log(`Game ending. Status: ${gameState.gameStatus}. Reason: ${reason}`); let title = "Game Over"; let message = "";
         if (!['playerWin', 'aiWin', 'draw'].includes(gameState.gameStatus)) { console.warn("endGame status unclear:", gameState.gameStatus); if (gameState.playerHand.length === 0) gameState.gameStatus = 'playerWin'; else if (gameState.aiHand.length === 0) gameState.gameStatus = 'aiWin'; else if (gameState.playerHand.length < gameState.aiHand.length) gameState.gameStatus = 'playerWin'; else if (gameState.aiHand.length < gameState.playerHand.length) gameState.gameStatus = 'aiWin'; else gameState.gameStatus = 'draw'; reason += " (Status fallback)"; }
         switch (gameState.gameStatus) { case 'playerWin': title = "You Win!"; message = `Congratulations!<br>You won the game.`; break; case 'aiWin': title = "AI Wins!"; message = `The AI won the game.<br>Better luck next time!`; break; case 'draw': title = "It's a Draw!"; message = `The game ended in a draw.`; break; default: message = `Game ended unexpectedly.`; break; }

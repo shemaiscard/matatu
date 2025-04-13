@@ -1,14 +1,13 @@
-/* styles.css - v7 - Temp Suit Text Glow & Layout Adjust */
 :root {
   --primary-color: #2c3e50;
   --secondary-color: #34495e;
   --accent-color: #e74c3c;
-  --text-color: #ecf0f1; /* Used for black text glow */
+  --text-color: #ecf0f1; 
   --card-bg: #fff;
   --card-border: #ddd;
   --card-shadow: rgba(0, 0, 0, 0.2);
   --success-color: #2ecc71;
-  --warning-color: #f39c12; /* Used for temp suit box highlight */
+  --warning-color: #f39c12;
   --hearts-color: #e74c3c;
   --diamonds-color: #e74c3c;
   --clubs-color: #2c3e50; /* Black color */
@@ -30,7 +29,7 @@ body {
   padding: 15px;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center; 
   min-height: 100vh;
 }
 
@@ -43,8 +42,8 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
   position: relative;
   overflow: hidden;
-  margin-top: 15px;
-  margin-bottom: 15px;
+  margin-top: 15px; 
+  margin-bottom: 15px; 
 }
 
 /* --- Screens & Transitions --- */
@@ -53,13 +52,15 @@ body {
 }
 
 #start-screen {
-  display: flex;
+  display: flex; 
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: center; 
   gap: 25px;
   padding: 50px 0;
   text-align: center;
+  /* Add min-height to help vertical centering */
+  min-height: 400px;
 }
 
 #game-screen {
@@ -577,8 +578,6 @@ body {
     color: var(--clubs-color);
     font-weight: bold; /* Bold weight for black */
 }
-
-
 /* --- Game Controls & Centered Button --- */
 .game-controls {
   display: flex;
@@ -619,7 +618,7 @@ body {
 }
 
 .modal.visible .modal-content {
-  transform: scale(1.2);
+  transform: scale(1);
 }
 
 .modal-content {
@@ -772,7 +771,7 @@ body {
   padding: 8px;
   border-radius: 50%;
   line-height: 1;
-  font-weight: bold; /* Default normal */
+  font-weight: normal; /* Default normal */
 }
 
 .suit-option:hover {
@@ -804,8 +803,8 @@ body {
   line-height: 1.5;
   margin-top: 10px;
   margin-bottom: 20px;
-  color: green;
-  font-size: 1.5rem;
+  color: var(--text-color);
+  font-size: 1.05rem;
 }
 
 #winner-message .reason {
